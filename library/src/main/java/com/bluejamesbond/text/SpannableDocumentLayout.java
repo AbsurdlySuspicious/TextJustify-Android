@@ -43,8 +43,6 @@ import com.bluejamesbond.text.style.DirectionSpan;
 import com.bluejamesbond.text.style.TextAlignment;
 import com.bluejamesbond.text.style.TextAlignmentSpan;
 
-import junit.framework.Assert;
-
 import java.util.Arrays;
 import java.util.HashMap;
 import java.util.LinkedList;
@@ -72,7 +70,8 @@ public abstract class SpannableDocumentLayout extends IDocumentLayout {
     private static int pushToken(int[] tokens, int index, int start, int end, float x, float y,
                                  float ascent, float descent, int line) {
 
-        Assert.assertTrue(index % TOKEN_LENGTH == 0);
+        if (index % TOKEN_LENGTH != 0)
+            throw new AssertionError("Invalid token length");
 
         tokens[index + TOKEN_START] = start;
         tokens[index + TOKEN_END] = end;
