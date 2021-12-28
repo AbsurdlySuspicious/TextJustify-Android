@@ -395,7 +395,7 @@ public class DocumentView extends ScrollView {
         }
     }
 
-    public View getViewportView(){
+    public View getViewportView() {
         return viewportView;
     }
 
@@ -460,20 +460,34 @@ public class DocumentView extends ScrollView {
 
     @SuppressWarnings("DrawAllocation")
     @Override
-    protected void onMeasure(final int widthMeasureSpec, final int heightMeasureSpec) {
+    protected void onMeasure(int widthMeasureSpec, int heightMeasureSpec) {
         final int width = MeasureSpec.getSize(widthMeasureSpec);
+        final int height = MeasureSpec.getSize(heightMeasureSpec);
+        final int heightMode = MeasureSpec.getMode(heightMeasureSpec);
+        final int heightMeasured = layout.getMeasuredHeight();
+
+        switch (heightMode) {
+            case MeasureSpec.UNSPECIFIED:
+                heightMeasureSpec = MeasureSpec.makeMeasureSpec(heightMeasured, MeasureSpec.AT_MOST);
+                break;
+            case MeasureSpec.EXACTLY:
+                heightMeasureSpec = MeasureSpec.makeMeasureSpec(Math.max(height, heightMeasured), MeasureSpec.EXACTLY);
+                break;
+            case MeasureSpec.AT_MOST:
+                heightMeasureSpec = MeasureSpec.makeMeasureSpec(Math.max(height, heightMeasured), MeasureSpec.AT_MOST);
+                break;
+        }
 
         switch (measureState) {
             case FINISH_AWAIT:
-                break;
             case AWAIT:
                 break;
             case FINISH:
                 viewportView.setMinimumWidth(width);
-                viewportView.setMinimumHeight(layout.getMeasuredHeight());
+                viewportView.setMinimumHeight(heightMeasured);
                 measureState = MeasureTaskState.FINISH_AWAIT;
 
-                if(cacheConfig != CacheConfig.NO_CACHE){
+                if (cacheConfig != CacheConfig.NO_CACHE) {
                     allocateResources();
                 }
 
